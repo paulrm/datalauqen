@@ -6,6 +6,40 @@
 <?PHP
 echo "datalaquen working ...";
 
+echo "<pre>_FILES=" . print_r($_FILES, true) . "</pre>";
+
+
+if(isset($_FILES["fichero_usuario"]))
+	{
+
+if (is_uploaded_file($_FILES['fichero_usuario']['tmp_name'])) 
+	{
+   echo "Archivo ". $_FILES['fichero_usuario']['name'] ." subido con éxtio.\n";
+   //echo "Monstrar contenido\n";
+   //readfile($_FILES['fichero_usuario']['tmp_name']);
+	$dir_subida = 'tmp/';
+	$fichero_subido = $dir_subida . basename($_FILES['fichero_usuario']['name']);
+
+	if (move_uploaded_file($_FILES['fichero_usuario']['tmp_name'], $fichero_subido)) 
+		{
+		echo "El fichero es válido y se subió con éxito.\n";
+		} 
+	else
+		{
+		echo "Upload Failed!\n";
+		}   
+	} 
+	else 
+		{
+   		echo "upload Failed: ";
+   		echo "nombre del archivo '". $_FILES['fichero_usuario']['tmp_name'] . "'.";
+		}
+	}
+
+
+
+	
+
 echo "<hr>";
 echo '<div id="chart_div"></div>';
 

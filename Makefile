@@ -12,4 +12,6 @@ endif
 all: clean
 
 clean:
-	rm -f test-write-xls.xls test-write-xls.xlsx
+	rm -f test-write-xls.xls test-write-xls.xlsx 
+	rm -rf tmp
+	mkdir tmp

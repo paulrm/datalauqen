@@ -4,6 +4,10 @@ Prueba de tecnologias de ingreso de datos
 # History
 
 ---
+## 2017-08-08 
+* agregado de upload de file
+
+---
 ## 2017-08-07
 * arreglado webserver en Chianti
 * arregado grafico por Google Graph

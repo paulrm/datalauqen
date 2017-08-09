@@ -80,12 +80,17 @@ $objPHPExcel->getActiveSheet()->setTitle('Simple');
 $objPHPExcel->setActiveSheetIndex(0);
 
 
+
+
 // Save Excel 2007 file
 echo date('H:i:s') , " Write to Excel2007 format" , EOL;
 $callStartTime = microtime(true);
 
 $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-$objWriter->save(str_replace('.php', '.xlsx', __FILE__));
+
+$objWriter->save('tmp/2process.xlsx');
+# $objWriter->save(str_replace('.php', '.xlsx', __FILE__));
+
 $callEndTime = microtime(true);
 $callTime = $callEndTime - $callStartTime;
 
