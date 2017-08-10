@@ -5,6 +5,24 @@
 <body>
 <?PHP
 echo "datalaquen working ...";
+if(isset($_REQUEST["action"]))
+	$action=$_REQUEST["action"];
+else
+	$action="none";
+	
+
+switch ($action) {
+    case "":
+        echo "i es igual a 0";
+        break;
+    case 1:
+        echo "i es igual a 1";
+        break;
+    case 2:
+        echo "i es igual a 2";
+        break;
+}
+
 
 echo "<pre>_FILES=" . print_r($_FILES, true) . "</pre>";
 
@@ -14,7 +32,7 @@ if(isset($_FILES["fichero_usuario"]))
 
 if (is_uploaded_file($_FILES['fichero_usuario']['tmp_name'])) 
 	{
-   echo "Archivo ". $_FILES['fichero_usuario']['name'] ." subido con éxtio.\n";
+   echo "Archivo ". $_FILES['fichero_usuario']['name'] ." uploaded.\n";
    //echo "Monstrar contenido\n";
    //readfile($_FILES['fichero_usuario']['tmp_name']);
 	$dir_subida = 'tmp/';
@@ -22,7 +40,7 @@ if (is_uploaded_file($_FILES['fichero_usuario']['tmp_name']))
 
 	if (move_uploaded_file($_FILES['fichero_usuario']['tmp_name'], $fichero_subido)) 
 		{
-		echo "El fichero es válido y se subió con éxito.\n";
+		echo "Upload and move OK.\n";
 		} 
 	else
 		{
@@ -77,6 +95,7 @@ echo "<a href=\"test-write-xls.xlsx\">Download xlsx file</a><br>";
       data.addColumn('number', "Average Temperature");
       data.addColumn('number', "Average Hours of Daylight");
 
+/*
       data.addRows([
         [new Date(2014, 0),  -.5,  5.7],
         [new Date(2014, 1),   .4,  8.7],
@@ -91,7 +110,10 @@ echo "<a href=\"test-write-xls.xlsx\">Download xlsx file</a><br>";
         [new Date(2014, 10), 1.1,  6.6],
         [new Date(2014, 11), -.2,  4.5]
       ]);
-
+*/
+<?PHP
+	echo getData();
+?>
       var materialOptions = {
         chart: {
           title: 'Average Temperatures and Daylight in Iceland Throughout the Year'
@@ -159,3 +181,44 @@ echo "<a href=\"test-write-xls.xlsx\">Download xlsx file</a><br>";
 </script>
 </body>
 </html>
+<?PHP
+function getData(){
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Conectando y seleccionado la base de datos  
+$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=ato6px4")
+    or die('No se ha podido conectar: ' . pg_last_error());
+
+// Realizando una consulta SQL
+$query = 'SELECT * FROM test';
+$result = pg_query($query) or die('La consulta fallo: ' . pg_last_error());
+
+// Imprimiendo los resultados en HTML
+// [new Date(2014, 0),  -.5,  5.7],
+$out = "";
+$out .= "data.addRows([\n";
+
+while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+	
+	echo "/* line=" . print_r($line, true) ." */\n";
+	$fecha=$line["fecha"];
+	list($y,$m,$d) = explode("-",$fecha);
+	$valor=$line["valor"];
+	
+    $out .=  "[new Date($y, $m, $d),  $valor,  90],\n";
+    //foreach ($line as $col_value) {
+    //    echo "\t\t<td>$col_value</td>\n";
+    //}
+
+}
+    //$out .= " [new Date(2014, 11), -.2,  4.5]\n";
+	$out .= " ]);\n";
+
+// Liberando el conjunto de resultados
+pg_free_result($result);
+// Cerrando la conexió
+return $out;
+}
+?>
