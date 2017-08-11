@@ -3,12 +3,11 @@ Prueba de tecnologias de ingreso de datos
 
 # History
 
-
 ---
 ## 2017-08-11 
-* :+1: 1era vuelta existosa 
-    * Problemas con el Upsert en postgres 9.3
-    * Pending el grabar desde db
+* :+1: 2da vuelta existosa + Demo
+    * Fixed en problema con el Upsert en postgres 9.3 -> aunque convendria pasar a 9.5
+    * Done el grabar desde db
 
 ---
 ## 2017-08-08 

@@ -66,42 +66,33 @@ if($ndata>0)
 	echo "<hr>";
 	}
 
-echo "<pre>_FILES=" . print_r($_FILES, true) . "</pre>";
+//echo "<pre>_FILES=" . print_r($_FILES, true) . "</pre>";
 
 
 if(isset($_FILES["fichero_usuario"]))
 	{
-
-if (is_uploaded_file($_FILES['fichero_usuario']['tmp_name'])) 
-	{
-   echo "Archivo ". $_FILES['fichero_usuario']['name'] ." uploaded.\n";
-   //echo "Monstrar contenido\n";
-   //readfile($_FILES['fichero_usuario']['tmp_name']);
-	$dir_subida = 'tmp/';
-	$fichero_subido = $dir_subida . basename($_FILES['fichero_usuario']['name']);
-
-	if (move_uploaded_file($_FILES['fichero_usuario']['tmp_name'], $fichero_subido)) 
+	if (is_uploaded_file($_FILES['fichero_usuario']['tmp_name'])) 
 		{
-		echo "Upload and move OK.\n";
+	   	echo "Archivo ". $_FILES['fichero_usuario']['name'] ." uploaded.\n";
+	   //echo "Monstrar contenido\n";
+	   //readfile($_FILES['fichero_usuario']['tmp_name']);
+		$dir_subida = 'tmp/';
+		$fichero_subido = $dir_subida . basename($_FILES['fichero_usuario']['name']);
+		if (move_uploaded_file($_FILES['fichero_usuario']['tmp_name'], $fichero_subido)) 
+			{
+			echo "Upload and move OK.\n";
+			} 
+		else
+			{
+			echo "Upload Failed!\n";
+			}   
 		} 
-	else
-		{
-		echo "Upload Failed!\n";
-		}   
-	} 
 	else 
 		{
-   		echo "upload Failed: ";
-   		echo "nombre del archivo '". $_FILES['fichero_usuario']['tmp_name'] . "'.";
+		echo "upload Failed: ";
+		echo "nombre del archivo '". $_FILES['fichero_usuario']['tmp_name'] . "'.";
 		}
 	}
-
-
-
-	
-
-
-
 echo "<hr><h4>datalauqen v0.0</h4>";
 $script01 = "
 <script>
@@ -173,7 +164,7 @@ function clean(){
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=ato6px4")
+$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=qhJdvBSk")
     or die('No se ha podido conectar: ' . pg_last_error());
 $query = 'TRUNCATE TABLE test';
 $result = pg_query($query) or die('La consulta fallo: ' . pg_last_error());
@@ -186,7 +177,7 @@ clean();
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=ato6px4")
+$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=qhJdvBSk")
     or die('No se ha podido conectar: ' . pg_last_error());	
 $data = array ( "2017-08-01" =>	95.90 ,
 				"2017-08-02" => 95.6,
@@ -205,10 +196,7 @@ return;
 }
 //----------------------------------------------------------------------------------------
 function getNdata(){
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=ato6px4")
+$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=qhJdvBSk")
     or die('No se ha podido conectar: ' . pg_last_error());
 $query = 'SELECT count(*) FROM test';
 $result = pg_query($query) or die('La consulta fallo: ' . pg_last_error());
@@ -220,14 +208,10 @@ return $count;
 }
 //----------------------------------------------------------------------------------------
 function getData(){
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 global $ndata;
 
 // Conectando y seleccionado la base de datos  
-$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=ato6px4")
+$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=qhJdvBSk")
     or die('No se ha podido conectar: ' . pg_last_error());
 
 // Realizando una consulta SQL
@@ -263,6 +247,28 @@ pg_free_result($result);
 return $out;
 }
 //---------------------------------------------------------------------------------------
+function getData2array(){
+global $ndata;
+
+// Conectando y seleccionado la base de datos  
+$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=qhJdvBSk")
+    or die('No se ha podido conectar: ' . pg_last_error());
+// Realizando una consulta SQL
+$query = 'SELECT * FROM test  order by fecha';
+$result = pg_query($query) or die('La consulta fallo: ' . pg_last_error());
+$data = array();
+$j=$ndata;
+while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+	//echo "/* line=" . print_r($line, true) ." */\n";
+	$fecha=$line["fecha"];
+	$valor=$line["valor"];
+	$data[$fecha] = $valor;
+	$j--;
+}
+pg_free_result($result);
+return $data;
+}
+//---------------------------------------------------------------------------------------
 function create() {
 /** Include PHPExcel */
 require_once dirname(__FILE__) . '/Classes/PHPExcel.php';
@@ -285,34 +291,72 @@ $objPHPExcel->getProperties()->setCreator($author)
 
 
 // Add some data
-echo date('H:i:s') , " Add some data" , EOL;
+echo date('H:i:s') ." Add some data date=" . date(DATE_RFC2822) . EOL;
 $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValue('A1', 'Hello')
-            ->setCellValue('B2', 'world!')
-            ->setCellValue('C1', 'Hello')
-            ->setCellValue('D2', 'world!');
+            ->setCellValue('A1', 'Fecha')
+            ->setCellValue('B1', 'Valor');
 
+$styleArray = array(
+    'font' => array(
+        'bold' => true,
+    ),
+    'alignment' => array(
+        'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
+    ),
+    'borders' => array(
+        'top' => array(
+            'style' => PHPExcel_Style_Border::BORDER_THIN,
+        ),
+    ),
+    'fill' => array(
+        'type' => PHPExcel_Style_Fill::FILL_GRADIENT_LINEAR,
+        'rotation' => 90,
+        'startcolor' => array(
+            'argb' => 'FFA0A0A0',
+        ),
+        'endcolor' => array(
+            'argb' => 'FFFFFFFF',
+        ),
+    ),
+);
+
+$objPHPExcel->setActiveSheetIndex(0)->setCellValue('L1', 'INVAP SE')
+							  ->getStyle('L1')->applyFromArray($styleArray);
+							  
+$objPHPExcel->setActiveSheetIndex(0)->setCellValue('L2', date(DATE_RFC2822))
+							  ->getStyle('L2')->applyFromArray($styleArray);            				 	
+
+
+$data = getData2array();
+$i=2;
+foreach($data as $k => $v) 
+	{
+	echo "grabando $k => $v <br>";
+	$objPHPExcel->setActiveSheetIndex(0)
+				->setCellValue('A' . $i, $k);		
+	$objPHPExcel->setActiveSheetIndex(0)
+				->setCellValue('B' . $i, $v);
+	$i++;		
+	}
 // Miscellaneous glyphs, UTF-8
+/*
 $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('A4', 'Miscellaneous glyphs')
             ->setCellValue('A5', 'éàèùâêîôûëïüÿäöüç');
-
-
 $objPHPExcel->getActiveSheet()->setCellValue('A8',"Hello\nWorld");
 $objPHPExcel->getActiveSheet()->getRowDimension(8)->setRowHeight(-1);
 $objPHPExcel->getActiveSheet()->getStyle('A8')->getAlignment()->setWrapText(true);
-
+*/
 
 // Rename worksheet
 echo date('H:i:s') , " Rename worksheet" , EOL;
-$objPHPExcel->getActiveSheet()->setTitle('Simple');
+$objPHPExcel->getActiveSheet()->setTitle('INVAP Data');
+
+
 
 
 // Set active sheet index to the first sheet, so Excel opens this as the first sheet
 $objPHPExcel->setActiveSheetIndex(0);
-
-
-
 
 // Save Excel 2007 file
 echo date('H:i:s') , " Write to Excel2007 format" , EOL;
@@ -330,7 +374,6 @@ echo date('H:i:s') , " File written to " , str_replace('.php', '.xlsx', pathinfo
 echo 'Call time to write Workbook was ' , sprintf('%.4f',$callTime) , " seconds" , EOL;
 // Echo memory usage
 echo date('H:i:s') , ' Current memory usage: ' , (memory_get_usage(true) / 1024 / 1024) , " MB" , EOL;
-
 
 // Save Excel 95 file
 /*
@@ -375,7 +418,7 @@ $debug = "";
         foreach($sheetData as $row => $fila)
             {
             $debug .=  "i=$i " . print_r($fila, true);
-            if($fila["A"]!="" && $fila["A"]!="fecha")
+            if($fila["A"]!="" && $fila["A"]!="Fecha")
             	{
                 echo "<pre>";
                 echo print_r($fila,true);
@@ -403,7 +446,7 @@ echo date('H:i:s') , " Done reading file" , EOL;
 }
 //---------------------------------------------------------------------------------------
 function upsert($fecha, $valor) {
-	$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=ato6px4")
+	$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=qhJdvBSk")
 	or die('No se ha podido conectar: ' . pg_last_error());	
 
 	$insert = "
