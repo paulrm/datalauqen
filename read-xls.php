@@ -39,7 +39,7 @@ require_once dirname(__FILE__) . '/Classes/PHPExcel/Reader/Excel2007.php';
 
 // Cargando la hoja de cálculo
 $objReader = new PHPExcel_Reader_Excel2007();
-$objPHPExcel = $objReader->load("tmp/test-write-xls.xlsx");
+$objPHPExcel = $objReader->load("tmp/example.xlsx");
 $debug = "";
 
         $objPHPExcel->setActiveSheetIndex(0);

@@ -6,7 +6,9 @@ Prueba de tecnologias de ingreso de datos
 
 ---
 ## 2017-08-11 
-* comenzando a integrar
+* :+1: 1era vuelta existosa 
+    * Problemas con el Upsert en postgres 9.3
+    * Pending el grabar desde db
 
 ---
 ## 2017-08-08 

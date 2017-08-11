@@ -4,7 +4,15 @@
 </head>
 <body>
 <?PHP
-echo "datalaquen working ...";
+
+error_reporting(E_ALL);
+ini_set('display_errors', TRUE);
+ini_set('display_startup_errors', TRUE);
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+define('EOL',(PHP_SAPI == 'cli') ? PHP_EOL : '<br />');
+
+
+echo "<a href=\"index.php\">datalaquen</a> working ...";
 if(isset($_REQUEST["action"]))
 	$action=$_REQUEST["action"];
 else
@@ -13,8 +21,8 @@ else
 echo "<br>";
 echo "<a href=\"index.php?action=clean\">01 clean</a><br>";
 echo "<a href=\"index.php?action=init\">02 init</a><br>";
-echo "<a href=\"index.php?action=init\">03 create xlsx from db</a><br>";
-echo "<a href=\"index.php?action=init\">03 donwload xlsx</a><br>";
+echo "<a href=\"index.php?action=create\">03 create xlsx from db</a><br>";
+echo "<a href=\"tmp/example.xlsx\">03 donwload xlsx</a><br>";
 echo '
 <!-- El tipo de codificación de datos, enctype, DEBE especificarse como sigue -->
 <form enctype="multipart/form-data" action="index.php" method="POST" style="margin-bottom: 0px;">
@@ -25,7 +33,7 @@ echo '
     <input type="submit" value="Enviar fichero" />
 </form>
 ';
-echo "<a href=\"index.php?action=init\">05 process xlsx</a><br>";
+echo "<a href=\"index.php?action=process\">05 process xlsx</a><br>";
 
 /*
 echo "<a href=\"test-pgsql.php\">test pgsql</a><br>";
@@ -39,9 +47,12 @@ switch ($action) {
     case "init":
         init();
         break;
-    case 2:
-        echo "i es igual a 2";
+    case "create":
+        create();
         break;
+    case "process":
+        process();
+        break;		
 	default:
 		break;
 }
@@ -251,7 +262,182 @@ pg_free_result($result);
 // Cerrando la conexió
 return $out;
 }
+//---------------------------------------------------------------------------------------
+function create() {
+/** Include PHPExcel */
+require_once dirname(__FILE__) . '/Classes/PHPExcel.php';
+
+
+// Create new PHPExcel object
+echo date('H:i:s') , " Create new PHPExcel object" , EOL;
+$objPHPExcel = new PHPExcel();
+
+// Set document properties
+$author = "Paul Messina";
+echo date('H:i:s') , " Set document properties" , EOL;
+$objPHPExcel->getProperties()->setCreator($author)
+							 ->setLastModifiedBy($author)
+							 ->setTitle("PHPExcel Test Document")
+							 ->setSubject("PHPExcel Test Document")
+							 ->setDescription("Test document for PHPExcel, generated using PHP classes.")
+							 ->setKeywords("office PHPExcel php")
+							 ->setCategory("Test result file");
+
+
+// Add some data
+echo date('H:i:s') , " Add some data" , EOL;
+$objPHPExcel->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'Hello')
+            ->setCellValue('B2', 'world!')
+            ->setCellValue('C1', 'Hello')
+            ->setCellValue('D2', 'world!');
+
+// Miscellaneous glyphs, UTF-8
+$objPHPExcel->setActiveSheetIndex(0)
+            ->setCellValue('A4', 'Miscellaneous glyphs')
+            ->setCellValue('A5', 'éàèùâêîôûëïüÿäöüç');
+
+
+$objPHPExcel->getActiveSheet()->setCellValue('A8',"Hello\nWorld");
+$objPHPExcel->getActiveSheet()->getRowDimension(8)->setRowHeight(-1);
+$objPHPExcel->getActiveSheet()->getStyle('A8')->getAlignment()->setWrapText(true);
+
+
+// Rename worksheet
+echo date('H:i:s') , " Rename worksheet" , EOL;
+$objPHPExcel->getActiveSheet()->setTitle('Simple');
+
+
+// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+$objPHPExcel->setActiveSheetIndex(0);
 
 
 
+
+// Save Excel 2007 file
+echo date('H:i:s') , " Write to Excel2007 format" , EOL;
+$callStartTime = microtime(true);
+
+$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+
+$objWriter->save('tmp/example.xlsx');
+# $objWriter->save(str_replace('.php', '.xlsx', __FILE__));
+
+$callEndTime = microtime(true);
+$callTime = $callEndTime - $callStartTime;
+
+echo date('H:i:s') , " File written to " , str_replace('.php', '.xlsx', pathinfo(__FILE__, PATHINFO_BASENAME)) , EOL;
+echo 'Call time to write Workbook was ' , sprintf('%.4f',$callTime) , " seconds" , EOL;
+// Echo memory usage
+echo date('H:i:s') , ' Current memory usage: ' , (memory_get_usage(true) / 1024 / 1024) , " MB" , EOL;
+
+
+// Save Excel 95 file
+/*
+echo date('H:i:s') , " Write to Excel5 format" , EOL;
+$callStartTime = microtime(true);
+
+$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+$objWriter->save(str_replace('.php', '.xls', __FILE__));
+$callEndTime = microtime(true);
+$callTime = $callEndTime - $callStartTime;
+
+echo date('H:i:s') , " File written to " , str_replace('.php', '.xls', pathinfo(__FILE__, PATHINFO_BASENAME)) , EOL;
+echo 'Call time to write Workbook was ' , sprintf('%.4f',$callTime) , " seconds" , EOL;
+ */
+  
+  
+// Echo memory usage
+echo date('H:i:s') , ' Current memory usage: ' , (memory_get_usage(true) / 1024 / 1024) , " MB" , EOL;
+
+
+// Echo memory peak usage
+echo date('H:i:s') , " Peak memory usage: " , (memory_get_peak_usage(true) / 1024 / 1024) , " MB" , EOL;
+
+// Echo done
+echo date('H:i:s') , " Done writing files" , EOL;
+echo 'Files have been created in ' , getcwd() , EOL;	
+}
+//---------------------------------------------------------------------------------------
+function process() {
+/** Include PHPExcel */
+require_once dirname(__FILE__) . '/Classes/PHPExcel.php';
+require_once dirname(__FILE__) . '/Classes/PHPExcel/Reader/Excel2007.php';
+
+// Cargando la hoja de cálculo
+$objReader = new PHPExcel_Reader_Excel2007();
+$objPHPExcel = $objReader->load("tmp/example.xlsx");
+$debug = "";
+
+        $objPHPExcel->setActiveSheetIndex(0);
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+        $i=1;
+        foreach($sheetData as $row => $fila)
+            {
+            $debug .=  "i=$i " . print_r($fila, true);
+            if($fila["A"]!="" && $fila["A"]!="fecha")
+            	{
+                echo "<pre>";
+                echo print_r($fila,true);
+                echo "</pre>";
+            	
+				$fecha=$fila["A"];
+				$valor=$fila["B"];
+				upsert($fecha, $valor);
+				}  
+			$i++;    
+        } // End-Foreeach
+
+
+
+
+// Echo memory usage
+echo date('H:i:s') , ' Current memory usage: ' , (memory_get_usage(true) / 1024 / 1024) , " MB" , EOL;
+
+// Echo memory peak usage
+echo date('H:i:s') , " Peak memory usage: " , (memory_get_peak_usage(true) / 1024 / 1024) , " MB" , EOL;
+
+// Echo done
+echo date('H:i:s') , " Done reading file" , EOL;
+	
+}
+//---------------------------------------------------------------------------------------
+function upsert($fecha, $valor) {
+	$dbconn = pg_connect("host=localhost dbname=mydb user=postgres password=ato6px4")
+	or die('No se ha podido conectar: ' . pg_last_error());	
+
+	$insert = "
+				INSERT INTO test (fecha, valor) VALUES ('$fecha', $valor ) 
+				ON CONFLICT (fecha) DO UPDATE SET valor = $valor WHERE fecha = '$fecha';
+			";
+	$insert = "
+				SELECT merge_db('$fecha', $valor )
+			";	
+	echo "<hr>" . $insert . "<hr>";
+	pg_query($insert) or die('La consulta fallo: ' . pg_last_error());
+	return;
+}
+
+/*
+
+INSERT INTO distributors (did, dname) VALUES (7, 'Redline GmbH')
+    ON CONFLICT (did) DO NOTHING;
+
+INSERT INTO distributors AS d (did, dname) VALUES (8, 'Anvil Distribution')
+    ON CONFLICT (did) DO UPDATE
+	
+	
+CREATE TABLE public.test2
+(
+    fecha date,
+    valor numeric(5, 2),
+    PRIMARY KEY (fecha)
+)
+WITH (
+    OIDS = FALSE
+);
+
+ALTER TABLE public.test2
+    OWNER to postgres;
+*/
 ?>

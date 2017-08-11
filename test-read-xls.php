@@ -39,7 +39,7 @@ require_once dirname(__FILE__) . '/Classes/PHPExcel/Reader/Excel2007.php';
 
 // Cargando la hoja de cálculo
 $objReader = new PHPExcel_Reader_Excel2007();
-$objPHPExcel = $objReader->load("test-write-xls.xlsx");
+$objPHPExcel = $objReader->load("tmp/example.xlsx");
 $value = $objPHPExcel->getActiveSheet()->getCell('A1')->getCalculatedValue();
 echo date('H:i:s') , ' A1 Value: ' , "$value" , EOL;
 
