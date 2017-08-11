@@ -331,7 +331,7 @@ $data = getData2array();
 $i=2;
 foreach($data as $k => $v) 
 	{
-	echo "grabando $k => $v <br>";
+	//echo "grabando $k => $v <br>";
 	$objPHPExcel->setActiveSheetIndex(0)
 				->setCellValue('A' . $i, $k);		
 	$objPHPExcel->setActiveSheetIndex(0)
@@ -420,10 +420,11 @@ $debug = "";
             $debug .=  "i=$i " . print_r($fila, true);
             if($fila["A"]!="" && $fila["A"]!="Fecha")
             	{
-                echo "<pre>";
+                /*
+				echo "<pre>";
                 echo print_r($fila,true);
                 echo "</pre>";
-            	
+            	*/
 				$fecha=$fila["A"];
 				$valor=$fila["B"];
 				upsert($fecha, $valor);
@@ -456,7 +457,7 @@ function upsert($fecha, $valor) {
 	$insert = "
 				SELECT merge_db('$fecha', $valor )
 			";	
-	echo "<hr>" . $insert . "<hr>";
+	//echo "<hr>" . $insert . "<hr>";
 	pg_query($insert) or die('La consulta fallo: ' . pg_last_error());
 	return;
 }

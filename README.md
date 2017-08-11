@@ -8,6 +8,8 @@ Prueba de tecnologias de ingreso de datos
 * :+1: 2da vuelta existosa + Demo
     * Fixed en problema con el Upsert en postgres 9.3 -> aunque convendria pasar a 9.5
     * Done el grabar desde db
+    * Agregado de definicion de db y funcion para hacer el Upsert
+    * Elimnados algunos debugs inecesarios
 
 ---
 ## 2017-08-08 
