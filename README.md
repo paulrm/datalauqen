@@ -3,6 +3,11 @@ Prueba de tecnologias de ingreso de datos
 
 # History
 
+
+---
+## 2017-08-11 
+* comenzando a integrar
+
 ---
 ## 2017-08-08 
 * agregado de upload de file
