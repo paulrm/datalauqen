@@ -6,7 +6,12 @@ Prueba de tecnologias de ingreso de datos
 ---
 ## 2017-08-23
 * :+1: Agregado de Editor v1.0
-    * Empezando a andar convinando Form y AddRow
+* Empezando a andar convinando Form y AddRow
+* Hecho la 1era demo
+
+### Pending 
+* Poner id en valores
+    
 
 ---
 ## 2017-08-11 
