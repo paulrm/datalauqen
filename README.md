@@ -4,6 +4,11 @@ Prueba de tecnologias de ingreso de datos
 # History
 
 ---
+## 2017-08-23
+* :+1: Agregado de Editor v1.0
+    * Empezando a andar convinando Form y AddRow
+
+---
 ## 2017-08-11 
 * :+1: 2da vuelta existosa + Demo
     * Fixed en problema con el Upsert en postgres 9.3 -> aunque convendria pasar a 9.5
