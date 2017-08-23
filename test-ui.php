@@ -53,6 +53,7 @@ $table .= '<thead>
             </tr>
         </tfoot>';
 
+$i = 1;
 while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
     
 	//echo "<pre>" . print_r($line,true) . "</pre>";
@@ -62,10 +63,11 @@ while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
         $table .= "\t\t<td>$col_value</td>\n";
     }
     */
-	$table .= "\t\t<td>" . '<input type="text" id="row-2-age" name="row-2-age" value="' . $line["fecha"] . '">' . "</td>\n";
-	$table .= "\t\t<td>" . '<input type="text" id="row-2-age" name="row-2-age" value="' . $line["valor"] . '">' . "</td>\n";
-	$table .= "\t\t<td>" . '<input type="text" id="row-2-age" name="row-2-age" value="' . "" . '">' . "</td>\n";
+	$table .= "\t\t<td>" . '<input type="text" id="data-A' .$i . '" name="data-A' .$i . '" value="' . $line["fecha"] . '">' . "</td>\n";
+	$table .= "\t\t<td>" . '<input type="text" id="data-B' .$i . '" name="data-B' .$i . '" value="' . $line["valor"] . '">' . "</td>\n";
+	$table .= "\t\t<td>" . '<input type="text" id="data-C' .$i . '" name="data-C' .$i . '" value="' . "" . '">' . "</td>\n";
 	$table .= "\t</tr>\n";
+	$i++;
 }
 $table .= "</table>\n";
 
@@ -99,9 +101,9 @@ $(document).ready(function() {
 
     $('#addRow').on( 'click', function () {
         table.row.add( [
-            '<input type="text" id="row-1-age" name="row-1-age" value="' + counter +'.1' +  '">',
-            '<input type="text" id="row-1-age" name="row-1-age" value="' + counter +'.2' +  '">',
-            '<input type="text" id="row-1-age" name="row-1-age" value="' + counter +'.3' +  '">'
+            '<input type="text" id="data-A1" name="ndata-A' + counter +'" value="' + counter +'.1' +  '">',
+            '<input type="text" id="data-B1" name="ndata-B' + counter +'" value="' + counter +'.2' +  '">',
+            '<input type="text" id="data-C1" name="ndata-C' + counter +'" value="' + counter +'.3' +  '">'
         ] ).draw( false );
  
         counter++;
